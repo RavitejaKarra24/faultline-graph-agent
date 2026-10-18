@@ -6,6 +6,12 @@ Faultline is a graph-grounded incident command desk. Start with a failing servic
 
 **Built for [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackathons/falkordb) · Powered by FalkorDB · MIT licensed**
 
+[![Checks](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/workflows/ci.yml)
+
+**[Watch / download the narrated demo](https://github.com/RavitejaKarra24/faultline-graph-agent/releases/download/v0.1.0/faultline-demo.mp4)** · [Submission copy](docs/SUBMISSION.md) · [Architecture](docs/ARCHITECTURE.md)
+
+The recording shows the real running app with synthetic voice narration.
+
 ![Faultline incident command desk](docs/screenshot-overview.png)
 
 ## The problem
@@ -56,7 +62,7 @@ docker compose up -d            # Resume with persisted memory
 5. **Change the graph.** Disable the Payments API → Redis dependency using the topology control, then rerun the investigation. The payment branch no longer contributes to Redis's blast radius. Re-enable the edge afterward.
 6. **Approve a draft action.** Approval is persisted and visible, but is explicitly simulated: no page is sent and no infrastructure is modified.
 
-See [the demo script](docs/DEMO.md) for narration and [submission copy](docs/SUBMISSION.md) for the entry form.
+See [the recorded demo and script](docs/DEMO.md) for the walkthrough and [submission copy](docs/SUBMISSION.md) for the entry form.
 
 ## Why this is a graph agent, not a chatbot over a diagram
 

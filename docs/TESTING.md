@@ -1,5 +1,17 @@
 # Verification
 
+## Verified build — October 18, 2026
+
+- **43 backend unit tests passed.**
+- **10 integration tests passed against FalkorDB v4.22.1.**
+- **4 Playwright UI tests passed**, including real topology at three viewport widths and unavailable-API recovery.
+- The separate **real-API browser smoke passed against the production Docker stack**: investigation, approval reload, cross-session memory, changed tasks, changed topology, responsive layout, theme, and no uncaught JS errors.
+- Ruff, TypeScript, ESLint, Prettier, production build, and Gitleaks secret scan passed.
+- [GitHub Actions code checks and real-database tests passed](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/runs/39100998709) on the initial published implementation.
+- A memory written through the API survived **database container recreation**, not just a new application instance. The Redis data directory was confirmed as `/data`, matching the mounted volume.
+
+These results describe the tested prototype, not a production-readiness certification.
+
 ## Automated code checks
 
 ```bash
@@ -29,6 +41,18 @@ Coverage includes:
 - Workspace isolation and unknown-resource behavior.
 
 Unit tests separately cover malformed input, bounded bodies, unavailable-database behavior, and optional model-output handling. A passing unit suite is not a substitute for the real-database suite.
+
+## Frontend browser checks
+
+With the API and FalkorDB running:
+
+```bash
+cd frontend
+bunx playwright install chromium
+bun run test:ui
+```
+
+These checks cover live topology, node details, memory navigation, themes, responsive layout, and explicit connection-failure recovery. The separate script below tests the complete investigation and mutation flow.
 
 ## Browser smoke test
 

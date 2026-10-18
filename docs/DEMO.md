@@ -1,6 +1,17 @@
 # Faultline — demo script
 
-Target length: 2–3 minutes. Use the default synthetic workspace. No API key needed.
+**[Watch / download the prepared MP4 walkthrough](https://github.com/RavitejaKarra24/faultline-graph-agent/releases/download/v0.1.0/faultline-demo.mp4).** It records the real application and API using a fresh synthetic workspace, with local macOS synthetic voice narration. No responses or graph results are mocked.
+
+Use the MP4 link if the submission form accepts direct video links; otherwise upload the file to its supported video platform and paste that URL. Review the recording before submitting.
+
+To reproduce the recording on macOS (requires `say`, `ffmpeg`, Chromium, and the app running):
+
+```bash
+uv run --python 3.12 --with playwright python scripts/record_demo.py
+# Output: artifacts/faultline-demo.mp4 (ignored by git)
+```
+
+The following script is also suitable for recording your own voice. Target length: 2–3 minutes. Use the default synthetic workspace. No API key needed.
 
 ## Before recording
 

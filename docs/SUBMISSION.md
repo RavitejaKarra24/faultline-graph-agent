@@ -35,15 +35,15 @@ The default agent is a deterministic, bounded multi-stage workflow using graph t
 ## Links
 - Repository: https://github.com/RavitejaKarra24/faultline-graph-agent
 - Local demo: http://localhost:8080 (complete setup in README)
-- Public demo video: **ADD YOUR UPLOADED VIDEO URL**
-- Optional hosted app: **ADD ONLY IF ACTUALLY DEPLOYED**
+- Public demo video: https://github.com/RavitejaKarra24/faultline-graph-agent/releases/download/v0.1.0/faultline-demo.mp4 (real application, synthetic narration; upload to a supported video platform if the form requires one)
+- Hosted app: not publicly deployed; complete local setup and recorded demo are provided.
 - Blog: [repository draft](BLOG.md) — publish separately if entering the blog prize
 
 ## Participant checklist
 - [ ] Confirm registration and team details on WeMakeDevs.
 - [ ] Confirm the main implementation was completed within the event window.
 - [ ] Run the project from the README and understand the core queries.
-- [ ] Record and upload the demo; verify the video is viewable without requesting access.
+- [ ] Review the prepared demo; if needed upload it to the form's supported video platform and verify public access.
 - [ ] Verify the repository is public and contains no secrets.
 - [ ] Replace every placeholder in the actual submission form.
 - [ ] Submit through the event panel before the announced deadline and save confirmation.

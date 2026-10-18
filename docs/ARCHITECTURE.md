@@ -28,7 +28,7 @@ Faultline is a single-process, graph-tool incident workflow with a browser clien
 | Investigation | `PROPOSES` | Action | Proposed simulated task |
 | Action | `ABOUT` | Service | Task's incident context |
 
-Public graph nodes include `id`, `label`, and `kind`. Source IDs and evidence paths refer to those IDs. User-created memories and investigation/action records are persisted but intentionally excluded from the default company topology view to keep it readable. Memory and investigation endpoints expose them separately.
+Public graph nodes include `id`, `label`, and `kind`. Source IDs and evidence paths refer to those IDs. The seed contains 25 company entities and 31 relationships. The dependency canvas focuses on 11 services/customers; teams, people, and documents are surfaced through ownership and evidence panels rather than cluttering that canvas. User-created memories and investigation/action records are persisted but intentionally excluded from the default company topology view to keep it readable. Memory and investigation endpoints expose them separately.
 
 `DEPENDS_ON.enabled` allows a controlled topology experiment without deleting the underlying dependency. Impact tools require **all** relationships in a path to be enabled.
 
@@ -70,7 +70,7 @@ Memory is explicit user input. Automatic extraction, relevance scoring, conflict
 
 ## Persistence
 
-FalkorDB stores company facts, memories, investigation snapshots, and approvals. Docker enables append-only persistence on a named `/data` volume. `docker compose down` keeps it; `docker compose down -v` destroys it. AOF uses `appendfsync everysec`, so an abrupt host failure can still lose approximately the most recent second of writes.
+FalkorDB stores company facts, memories, investigation snapshots, and approvals. Docker enables append-only persistence on a named `/data` volume. `FALKORDB_DATA_PATH=/data` explicitly aligns the server's actual data directory with that mount (the image's default data directory must not be assumed to match it). `docker compose down` keeps it; `docker compose down -v` destroys it. AOF uses `appendfsync everysec`, so an abrupt host failure can still lose approximately the most recent second of writes.
 
 Investigation creation persists its snapshot and tasks in one query. The multi-stage read workflow is **not** a transactionally isolated snapshot: a concurrent topology change can produce mixed-time evidence. There are no distributed job claims, worker leases, or external execution semantics.
 
