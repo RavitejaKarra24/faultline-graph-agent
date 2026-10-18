@@ -1,0 +1,205 @@
+"""Entirely fictional demo topology. Labels and relationship types are trusted constants."""
+
+
+def node(id, label, kind, description, **props):
+    return {
+        "id": id,
+        "label": label,
+        "kind": kind,
+        "description": description,
+        "fictional": True,
+        **props,
+    }
+
+
+NODES = [
+    node(
+        "svc-redis",
+        "Redis",
+        "Service",
+        "Fictional shared cache and idempotency store; connection pool exhaustion.",
+        status="degraded",
+        tier=0,
+    ),
+    node(
+        "svc-payments",
+        "Payments API",
+        "Service",
+        "Payment authorization and idempotency tokens.",
+        status="healthy",
+        tier=1,
+    ),
+    node(
+        "svc-checkout",
+        "Checkout",
+        "Service",
+        "Checkout orchestration; requires payments and identity.",
+        status="healthy",
+        tier=1,
+    ),
+    node(
+        "svc-orders",
+        "Order service",
+        "Service",
+        "Order placement and settlement tracking.",
+        status="healthy",
+        tier=1,
+    ),
+    node(
+        "svc-storefront",
+        "Storefront",
+        "Service",
+        "Customer-facing shopping journey.",
+        status="healthy",
+        tier=1,
+    ),
+    node(
+        "svc-notifications",
+        "Notifications",
+        "Service",
+        "Order receipt and delivery notifications.",
+        status="healthy",
+        tier=2,
+    ),
+    node(
+        "svc-analytics",
+        "Analytics",
+        "Service",
+        "Near-real-time commerce reporting.",
+        status="healthy",
+        tier=2,
+    ),
+    node(
+        "svc-auth",
+        "Identity",
+        "Service",
+        "Session and identity validation.",
+        status="healthy",
+        tier=1,
+    ),
+    node("team-platform", "Platform Reliability", "Team", "Owns shared runtime and Redis."),
+    node("team-commerce", "Commerce", "Team", "Owns checkout and the storefront."),
+    node("team-payments", "Payments & Orders", "Team", "Owns payment and order correctness."),
+    node("team-data", "Data & Messaging", "Team", "Owns analytics and notification delivery."),
+    node("person-maya", "Maya Chen", "Person", "Fictional platform primary on-call.", role="SRE"),
+    node(
+        "person-eli",
+        "Eli Morgan",
+        "Person",
+        "Fictional commerce primary on-call.",
+        role="Staff engineer",
+    ),
+    node(
+        "person-priya",
+        "Priya Shah",
+        "Person",
+        "Fictional payments primary on-call.",
+        role="Payments lead",
+    ),
+    node(
+        "person-noah",
+        "Noah Rivera",
+        "Person",
+        "Fictional data primary on-call.",
+        role="Data engineer",
+    ),
+    node(
+        "customer-northstar",
+        "Northstar Commerce",
+        "Customer",
+        "Fictional enterprise storefront customer.",
+        tier=1,
+    ),
+    node("customer-acme", "Acme Retail", "Customer", "Fictional order API customer.", tier=1),
+    node("customer-orbit", "Orbit Labs", "Customer", "Fictional analytics customer.", tier=2),
+    node(
+        "INC-001",
+        "Redis connection exhaustion — prior incident",
+        "Incident",
+        "Fictional incident: a payments deploy multiplied Redis pools, exhausting maxclients. Capping pools and draining idle connections restored checkout without restarting Redis.",
+        source="INC-001",
+        resolvedAt="2025-02-14T09:30:00Z",
+    ),
+    node(
+        "INC-002",
+        "Delayed order receipts",
+        "Incident",
+        "Fictional incident: order retries backed up notifications. Rate-limited replay after payment recovery avoided duplicate receipts.",
+        source="INC-002",
+    ),
+    node(
+        "RUN-001",
+        "Cap pools and drain before restarts",
+        "Runbook",
+        "Inspect connected_clients and rejected_connections; cap per-worker connection pools, drain idle connections gradually, and verify checkout recovery. Do not restart Redis indiscriminately. Human review required.",
+        source="RUN-001",
+    ),
+    node(
+        "RUN-002",
+        "Validate payment and order recovery",
+        "Runbook",
+        "Check payment idempotency and order backlog before rate-limited replay; compare duplicate authorization metrics. Human review required.",
+        source="RUN-002",
+    ),
+    node(
+        "DEC-001",
+        "Why indiscriminate Redis restart is unsafe",
+        "Decision",
+        "Fictional architecture decision: Redis holds payment idempotency tokens and checkout session state. An indiscriminate restart risks duplicate charges and session loss; cap/drain pools first and require payments owner approval for any restart.",
+        source="DEC-001",
+    ),
+    node(
+        "DEC-002",
+        "Analytics is eventually consistent",
+        "Decision",
+        "Fictional decision: analytics can lag during cache recovery; prioritize payment correctness over report freshness.",
+        source="DEC-002",
+    ),
+]
+
+DEPENDENCIES = [
+    ("svc-payments", "svc-redis"),
+    ("svc-checkout", "svc-payments"),
+    ("svc-orders", "svc-payments"),
+    ("svc-storefront", "svc-checkout"),
+    ("svc-notifications", "svc-orders"),
+    ("svc-analytics", "svc-redis"),
+    ("svc-checkout", "svc-auth"),
+    ("customer-northstar", "svc-storefront"),
+    ("customer-acme", "svc-orders"),
+    ("customer-orbit", "svc-analytics"),
+]
+OWNERSHIP = [
+    ("team-platform", "svc-redis"),
+    ("team-platform", "svc-auth"),
+    ("team-payments", "svc-payments"),
+    ("team-payments", "svc-orders"),
+    ("team-commerce", "svc-checkout"),
+    ("team-commerce", "svc-storefront"),
+    ("team-data", "svc-notifications"),
+    ("team-data", "svc-analytics"),
+]
+ON_CALL = [
+    ("person-maya", "team-platform"),
+    ("person-eli", "team-commerce"),
+    ("person-priya", "team-payments"),
+    ("person-noah", "team-data"),
+]
+KNOWLEDGE = [
+    ("INC-001", "svc-redis"),
+    ("INC-001", "svc-payments"),
+    ("INC-002", "svc-notifications"),
+    ("RUN-001", "svc-redis"),
+    ("RUN-002", "svc-payments"),
+    ("RUN-002", "svc-orders"),
+    ("DEC-001", "svc-redis"),
+    ("DEC-001", "svc-payments"),
+    ("DEC-002", "svc-analytics"),
+]
+EDGES = [
+    *[(s, t, "DEPENDS_ON") for s, t in DEPENDENCIES],
+    *[(s, t, "OWNS") for s, t in OWNERSHIP],
+    *[(s, t, "ON_CALL_FOR") for s, t in ON_CALL],
+    *[(s, t, "ABOUT") for s, t in KNOWLEDGE],
+]
+PUBLIC_KINDS = ["Service", "Team", "Person", "Customer", "Runbook", "Incident", "Decision"]

@@ -1,0 +1,5 @@
+dist
+node_modules
+bun.lock
+playwright-report
+test-results
