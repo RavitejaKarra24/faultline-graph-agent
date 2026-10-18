@@ -1,5 +1,17 @@
 # Verification
 
+## Submission recheck — October 18, 2026
+
+- The repository was verified `PUBLIC` through the GitHub API.
+- `docker compose up --build -d` completed; FalkorDB and the API reported healthy, the web container was running, and `/api/health` returned `status: ok`.
+- `make check` passed: 43 backend unit tests, Ruff, TypeScript, ESLint, Prettier, and the production frontend build.
+- `make integration` passed all 10 tests against the local FalkorDB instance.
+- `bun run test:ui` passed all four browser tests against the real local API.
+- All seven supplied [`queries/*.cypher`](../queries/) files were compared to the running application's query trace and replayed with the same bound parameters in a fresh workspace. Their result counts matched; the Redis baseline contained six impacted services and three customers. The verification workspace was deleted afterward.
+- Local Markdown links in README, submission copy, architecture, and the Cypher reference resolved successfully.
+
+The local app is available at http://localhost:8080 while Docker is running. This is not a public deployment. The final demo video is the submitter's responsibility.
+
 ## Verified build — October 18, 2026
 
 - **43 backend unit tests passed.**

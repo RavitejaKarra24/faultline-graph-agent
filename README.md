@@ -8,9 +8,9 @@ Faultline is a graph-grounded incident command desk. Start with a failing servic
 
 [![Checks](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/workflows/ci.yml)
 
-**[Watch / download the narrated demo](https://github.com/RavitejaKarra24/faultline-graph-agent/releases/download/v0.1.0/faultline-demo.mp4)** · [Submission copy](docs/SUBMISSION.md) · [Architecture](docs/ARCHITECTURE.md)
+[Submission copy](docs/SUBMISSION.md) · [Cypher queries](docs/CYPHER.md) · [Architecture](docs/ARCHITECTURE.md) · [Recording walkthrough](docs/DEMO.md)
 
-The recording shows the real running app with synthetic voice narration.
+The submitter will supply the final demo video. The entry uses the complete local setup below rather than a public deployment.
 
 ![Faultline incident command desk](docs/screenshot-overview.png)
 
@@ -37,6 +37,15 @@ docker compose up --build -d
 
 Open **http://localhost:8080**. First build can take a few minutes.
 
+Verify startup before opening the app:
+
+```bash
+docker compose ps
+curl --fail http://localhost:8000/api/health
+```
+
+The API should return `{"status":"ok","database":"FalkorDB","mode":"graph-tools","version":"0.1.0"}`. The database and API should be healthy, and the web container should be running. The first graph or investigation request creates the fictional company graph automatically.
+
 | URL | Purpose |
 | --- | --- |
 | http://localhost:8080 | Incident command desk |
@@ -52,6 +61,8 @@ docker compose down             # Stop; keep graph and memory
 docker compose up -d            # Resume with persisted memory
 # DESTRUCTIVE: docker compose down -v removes all demo graphs and memory.
 ```
+
+If startup fails, start Docker Desktop (or your Docker engine), then retry `docker compose up --build -d`. Ports **8080, 8000, 6379, and 3000** must be free. Inspect `docker compose logs --tail=100 falkordb api web` for build or health errors. No `.env` file is required for the default setup. If you previously configured an AI key and want key-free mode, leave `OPENAI_API_KEY` empty in `.env` and recreate the API container.
 
 ## A two-minute judge's walkthrough
 
@@ -114,16 +125,35 @@ flowchart LR
 graph LR
     Customer -->|DEPENDS_ON| Service
     Service -->|DEPENDS_ON| OtherService[Service]
-    Service --- Team
-    Team --- Person
-    Service --- Runbook
-    Service --- Incident
-    Service --- Decision
-    Service --- Memory
-    Investigation --- Action
+    Team -->|OWNS| Service
+    Person -->|ON_CALL_FOR| Team
+    Runbook -->|ABOUT| Service
+    Incident -->|ABOUT| Service
+    Decision -->|ABOUT| Service
+    Memory -->|ABOUT| Service
+    Investigation -->|ABOUT| Service
+    Investigation -->|PROPOSES| Action
+    Action -->|ABOUT| Service
 ```
 
+| Node label | Stored facts |
+| --- | --- |
+| `Service` | Stable ID, display label, description, recorded status, tier |
+| `Customer` | Stable ID, display label, description; dependencies identify used services |
+| `Team`, `Person` | Ownership and on-call relationships; a person's role |
+| `Runbook`, `Incident`, `Decision` | Source ID, title in `label`, guidance/history in `description` |
+| `Memory` | Service ID, content, `helpful`/`avoid` outcome, originating session, timestamp |
+| `Investigation` | ID, session, timestamp, JSON result snapshot; target and proposed actions are graph links |
+| `Action` | ID, pending/approved status, JSON task payload; linked to its investigation and target service |
+| `Workspace` | Internal fixture-version marker used for idempotent initialization |
+
+Dependency edges point **from the consumer to its dependency**. `DEPENDS_ON.enabled` controls whether traversals include the edge. The initial graph has **25 company nodes and 31 relationships**; memories, investigations, and actions are added as the app is used. Each workspace uses a separate `faultline_<slug>` graph.
+
 See [architecture and tradeoffs](docs/ARCHITECTURE.md) for exact relationships, isolation, persistence, and limitations. [CONTRACT.md](CONTRACT.md) documents the API. FastAPI's `/docs` is the generated schema reference.
+
+### Queries and graph algorithm
+
+The [query reference](docs/CYPHER.md) explains all seven investigation tools, their parameters, graph writes, and a runnable example. Exact read queries are also provided as [standalone `.cypher` files](queries/). The algorithm follows enabled reverse dependency paths for up to six hops, resolves owners, retrieves related guidance and persistent lessons, and attaches those paths to simulated response tasks. It uses Cypher traversals rather than PageRank or a separate graph-algorithm service. The runtime implementations are [planner.py](backend/src/faultline_backend/planner.py) and [storage.py](backend/src/faultline_backend/storage.py).
 
 ## Local development
 
@@ -162,6 +192,7 @@ backend/       FastAPI, parameterized graph tools, planner, fixture, tests
 frontend/      React + TypeScript command desk and topology visualization
 infra/         Multi-stage Dockerfiles and nginx reverse proxy
 scripts/       Reproducible browser smoke test
+queries/       Standalone Cypher for all seven investigation tools
 compose.yaml   FalkorDB + API + UI, local-only exposed ports, persistent volume
 docs/          Architecture, demo, testing, submission copy, blog draft
 ```
@@ -181,7 +212,9 @@ docs/          Architecture, demo, testing, submission copy, blog draft
 | Track | Implemented demonstration |
 | --- | --- |
 | **01 · Agents That Act on Connected Data** (primary) | Multi-hop impact reasoning, parameterized Cypher tools, evidence-linked action drafts, human approval |
-| **02 · Agent Memory and Coordination** | Cross-session lessons, graph-persisted investigations/actions, shared context across specialist stages, workspace namespaces |
-| **03 · Company Brain** | Services, teams, people, customers, runbooks, historical incidents, and decisions connected in one graph |
+| **02 · Agent Memory and Coordination** (additional fit) | Cross-session lessons, graph-persisted investigations/actions, shared context across specialist stages, workspace namespaces |
+| **03 · Company Brain** (additional fit) | Services, teams, people, customers, runbooks, historical incidents, and decisions connected in one graph |
+
+**Submission track: 01 · Agents That Act on Connected Data.** The other rows describe related capabilities; they are not additional track entries.
 
 Built with coding-assistant support. The submitter should review the code, run the demo, and be prepared to explain the graph model and planner. See [LICENSE](LICENSE).

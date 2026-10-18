@@ -34,6 +34,8 @@ Public graph nodes include `id`, `label`, and `kind`. Source IDs and evidence pa
 
 ## Tools and bounds
 
+The [Cypher reference](CYPHER.md) maps every investigation tool to its [standalone query file](../queries/) and documents the graph writes, bound parameters, and replay instructions.
+
 The planner performs a fixed sequence:
 
 - Target service lookup.
