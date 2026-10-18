@@ -9,3 +9,16 @@
 .env.*
 **/*.log
 artifacts/
+recordings/
+.local/
+.agents/
+.codex/
+.claude/
+.superstack/
+.aws/
+.secrets/
+secrets/
+**/*.pem
+**/*.key
+credentials*.json
+service-account*.json

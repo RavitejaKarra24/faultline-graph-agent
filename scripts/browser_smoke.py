@@ -13,6 +13,7 @@ from playwright.sync_api import expect, sync_playwright
 
 BASE_URL = os.environ.get("FAULTLINE_URL", "http://localhost:8080")
 ROOT = Path(__file__).resolve().parents[1]
+SCREENSHOTS = ROOT / "artifacts" / "smoke"
 WORKSPACE = "smoke-" + uuid4().hex[:12]
 LESSON = "Drain the payment connection pool before Redis maintenance; avoid a blanket restart."
 
@@ -46,8 +47,8 @@ def main():
         assert len(baseline["impactedCustomers"]) == 3, baseline
         assert baseline["trace"] and all(step["query"] for step in baseline["trace"])
         expect(page.get_by_role("heading", name="The fault, in context.")).to_be_visible()
-        ROOT.joinpath("docs").mkdir(exist_ok=True)
-        page.screenshot(path=str(ROOT / "docs/screenshot.png"), full_page=True)
+        SCREENSHOTS.mkdir(parents=True, exist_ok=True)
+        page.screenshot(path=str(SCREENSHOTS / "screenshot.png"), full_page=True)
 
         # Approval is persisted and history reconciles its independently stored status.
         approve = page.get_by_role("button", name="Approve simulation", exact=True).first
@@ -105,7 +106,7 @@ def main():
             expect(page.get_by_role("button", name="New session", exact=True)).to_be_visible()
         page.get_by_role("button", name="Switch to dark theme", exact=True).click()
         assert page.locator("html").get_attribute("data-theme") == "dark"
-        page.screenshot(path=str(ROOT / "docs/screenshot-dark.png"), full_page=True)
+        page.screenshot(path=str(SCREENSHOTS / "screenshot-dark.png"), full_page=True)
         assert not errors, errors
         print(
             json.dumps(

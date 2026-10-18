@@ -1,17 +1,76 @@
-.DS_Store
+# Local configuration and credentials. Keep only sanitized examples in Git.
 .env
 .env.*
 !.env.example
+.envrc
+.aws/
+.secrets/
+secrets/
+credentials*.json
+service-account*.json
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Python environments, builds, and caches.
 .venv/
+venv/
 __pycache__/
 *.py[cod]
+*.egg-info/
+build/
 .pytest_cache/
 .ruff_cache/
+.mypy_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# JavaScript dependencies, generated bundles, and caches.
 node_modules/
 dist/
+.vite/
+.cache/
+.eslintcache
+*.tsbuildinfo
+
+# Test reports and local runtime output.
 coverage/
+*.lcov
 .playwright/
 playwright-report/
 test-results/
+logs/
 *.log
-artifacts/
+*.pid
+
+# Recording takes, narration, exports, and smoke-test screenshots.
+/artifacts/
+/recordings/
+/docs/screenshot.png
+/docs/screenshot-dark.png
+
+# Local preparation material; not part of the runnable project.
+/brand.md
+/docs/BLOG.md
+/docs/SUBMISSION.md
+/scripts/record_demo.py
+/.local/
+/.agents/
+/.codex/
+/.claude/
+/.superstack/
+AGENTS.local.md
+CLAUDE.local.md
+
+# Editor and operating-system files.
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini

@@ -8,9 +8,9 @@ Faultline is a graph-grounded incident command desk. Start with a failing servic
 
 [![Checks](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/workflows/ci.yml/badge.svg)](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/workflows/ci.yml)
 
-[Submission copy](docs/SUBMISSION.md) · [Cypher queries](docs/CYPHER.md) · [Architecture](docs/ARCHITECTURE.md) · [Recording walkthrough](docs/DEMO.md)
+[Watch the 2:30 demo](https://youtu.be/TjTtA-2QQ_w) · [Cypher queries](docs/CYPHER.md) · [Architecture](docs/ARCHITECTURE.md) · [API contract](CONTRACT.md) · [Testing](docs/TESTING.md)
 
-The submitter will supply the final demo video. The entry uses the complete local setup below rather than a public deployment.
+Run the full app locally with Docker Compose. The recorded demo includes AI summary synthesis, persistent memory, query inspection, and a dependency change that changes the reported impact.
 
 ![Faultline incident command desk](docs/screenshot-overview.png)
 
@@ -64,7 +64,7 @@ docker compose up -d            # Resume with persisted memory
 
 If startup fails, start Docker Desktop (or your Docker engine), then retry `docker compose up --build -d`. Ports **8080, 8000, 6379, and 3000** must be free. Inspect `docker compose logs --tail=100 falkordb api web` for build or health errors. No `.env` file is required for the default setup. If you previously configured an AI key and want key-free mode, leave `OPENAI_API_KEY` empty in `.env` and recreate the API container.
 
-## A two-minute judge's walkthrough
+## Try an incident
 
 1. **Investigate Redis.** Keep the default question and run an investigation. Inspect affected services, customers, and owners.
 2. **Follow the proof.** Open evidence paths and the query trace. Each tool records its actual Cypher, parameters, result count, and elapsed time.
@@ -73,7 +73,7 @@ If startup fails, start Docker Desktop (or your Docker engine), then retry `dock
 5. **Change the graph.** Disable the Payments API → Redis dependency using the topology control, then rerun the investigation. The payment branch no longer contributes to Redis's blast radius. Re-enable the edge afterward.
 6. **Approve a draft action.** Approval is persisted and visible, but is explicitly simulated: no page is sent and no infrastructure is modified.
 
-See [the recorded demo and script](docs/DEMO.md) for the walkthrough and [submission copy](docs/SUBMISSION.md) for the entry form.
+The [demo walkthrough](docs/DEMO.md) maps these features to the finished video.
 
 ## Why this is a graph agent, not a chatbot over a diagram
 
@@ -89,7 +89,7 @@ The topology toggle is a falsifiable demo: change one relationship and the answe
 
 ### Execution modes — transparent by design
 
-**`graph-tools` (default):** a bounded, deterministic agent workflow coordinates impact analysis, ownership resolution, knowledge/memory retrieval, and response planning. It uses actual graph tools but **does not use an LLM**. These are specialist stages in one process, not separate independently running AI models. This mode is reproducible, key-free, and appropriate for a time-sensitive demo.
+**`graph-tools` (default):** a bounded, deterministic workflow coordinates impact analysis, ownership resolution, knowledge/memory retrieval, and response planning. It uses actual graph tools but **does not use an LLM**. These are specialist stages in one process, not separate independently running AI models.
 
 **`llm` (optional):** after graph tools complete, an OpenAI-compatible model can synthesize the narrative from the retrieved context. The model does not invent Cypher, select arbitrary tools, or execute actions. Structured evidence, impact, and approval boundaries remain graph-derived. If synthesis fails, the grounded plan remains available with a warning.
 
@@ -194,7 +194,7 @@ infra/         Multi-stage Dockerfiles and nginx reverse proxy
 scripts/       Reproducible browser smoke test
 queries/       Standalone Cypher for all seven investigation tools
 compose.yaml   FalkorDB + API + UI, local-only exposed ports, persistent volume
-docs/          Architecture, demo, testing, submission copy, blog draft
+docs/          Architecture, demo walkthrough, query reference, and testing
 ```
 
 ## Scope, safety, and honest limitations
@@ -207,14 +207,4 @@ docs/          Architecture, demo, testing, submission copy, blog draft
 - The graph-tools workflow is deterministic. Optional LLM mode adds narrative synthesis, not open-ended autonomous planning.
 - A single-instance persistent volume and synchronous workflow are sufficient for this demo; high-concurrency coordination, job queues, locking, and distributed worker claims are not implemented.
 
-## Hackathon fit
-
-| Track | Implemented demonstration |
-| --- | --- |
-| **01 · Agents That Act on Connected Data** (primary) | Multi-hop impact reasoning, parameterized Cypher tools, evidence-linked action drafts, human approval |
-| **02 · Agent Memory and Coordination** (additional fit) | Cross-session lessons, graph-persisted investigations/actions, shared context across specialist stages, workspace namespaces |
-| **03 · Company Brain** (additional fit) | Services, teams, people, customers, runbooks, historical incidents, and decisions connected in one graph |
-
-**Submission track: 01 · Agents That Act on Connected Data.** The other rows describe related capabilities; they are not additional track entries.
-
-Built with coding-assistant support. The submitter should review the code, run the demo, and be prepared to explain the graph model and planner. See [LICENSE](LICENSE).
+Built for Graph Hacks, **Track 01 · Agents That Act on Connected Data**, with coding-assistant support. See [LICENSE](LICENSE).

@@ -1,18 +1,8 @@
-# Verification
+# Testing
 
-## Submission recheck — October 18, 2026
+The local app is available at http://localhost:8080 while Docker is running. Watch the [recorded walkthrough](https://youtu.be/TjTtA-2QQ_w) or follow the [demo steps](DEMO.md).
 
-- The repository was verified `PUBLIC` through the GitHub API.
-- `docker compose up --build -d` completed; FalkorDB and the API reported healthy, the web container was running, and `/api/health` returned `status: ok`.
-- `make check` passed: 43 backend unit tests, Ruff, TypeScript, ESLint, Prettier, and the production frontend build.
-- `make integration` passed all 10 tests against the local FalkorDB instance.
-- `bun run test:ui` passed all four browser tests against the real local API.
-- All seven supplied [`queries/*.cypher`](../queries/) files were compared to the running application's query trace and replayed with the same bound parameters in a fresh workspace. Their result counts matched; the Redis baseline contained six impacted services and three customers. The verification workspace was deleted afterward.
-- Local Markdown links in README, submission copy, architecture, and the Cypher reference resolved successfully.
-
-The local app is available at http://localhost:8080 while Docker is running. This is not a public deployment. The final demo video is the submitter's responsibility.
-
-## Verified build — October 18, 2026
+## Recorded verification — October 18, 2026
 
 - **43 backend unit tests passed.**
 - **10 integration tests passed against FalkorDB v4.22.1.**
@@ -21,6 +11,7 @@ The local app is available at http://localhost:8080 while Docker is running. Thi
 - Ruff, TypeScript, ESLint, Prettier, production build, and Gitleaks secret scan passed.
 - [GitHub Actions code checks and real-database tests passed](https://github.com/RavitejaKarra24/faultline-graph-agent/actions/runs/39100998709) on the initial published implementation.
 - A memory written through the API survived **database container recreation**, not just a new application instance. The Redis data directory was confirmed as `/data`, matching the mounted volume.
+- All seven supplied [`queries/*.cypher`](../queries/) files were replayed with the application's bound parameters in a fresh workspace. Result counts matched the trace, including the Redis baseline of six impacted services and three customers. The verification workspace was deleted afterward.
 
 These results describe the tested prototype, not a production-readiness certification.
 
@@ -93,7 +84,7 @@ The script intercepts requests only to assign a fresh `smoke-*` workspace header
 7. No page-level horizontal overflow at 375, 768, and 1440px.
 8. Theme switching and no uncaught browser JavaScript errors.
 
-Screenshots are written to `docs/screenshot.png` and `docs/screenshot-dark.png`. The isolated smoke graph is intentionally retained for inspection; it contains synthetic data only. These are smoke checks, not a complete accessibility, security, concurrency, or performance certification.
+Screenshots are written to `artifacts/smoke/screenshot.png` and `artifacts/smoke/screenshot-dark.png`, which are excluded from Git. The isolated smoke graph is intentionally retained for inspection; it contains synthetic data only. These are smoke checks, not a complete accessibility, security, concurrency, or performance certification.
 
 ## Manual checks before submitting
 
@@ -103,7 +94,7 @@ Screenshots are written to `docs/screenshot.png` and `docs/screenshot-dark.png`.
 - Stop FalkorDB, refresh, and verify an honest connection error with no fabricated data.
 - Restart FalkorDB without deleting volumes and verify memories remain.
 - Download JSON/Markdown and inspect the exported evidence and action statuses.
-- Record the real UI using [DEMO.md](DEMO.md), upload the recording, and test the public video link.
+- Follow [DEMO.md](DEMO.md) and check that the linked recording plays.
 
 ## Continuous integration
 
